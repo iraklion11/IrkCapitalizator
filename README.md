@@ -1,0 +1,2 @@
+# IrkCapitalizator
+IrkCapitalizator
