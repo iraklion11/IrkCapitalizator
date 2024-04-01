@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        textarea, button, p {
+            width: 300px;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #capitalizedWords {
+            height: 65px; /* изменен размер */
+            margin-top: -9px; /* уменьшен верхний отступ */
+        }
+        #inputText, #outputText {
+            height: 300px;
+            margin-top: -9px;
+        }
+        #copyButton, #updateButton {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            width: 322px; /* изменен размер */
+        }
+        #copyButton:hover, #updateButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h5>Full Capitalization List</h5>
+    <textarea id="capitalizedWords" placeholder="In Case of Fully Capitalized Words (Brand Name, Abbreviation...)"></textarea>
+    <h5>Input Text</h5>
+    <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+    <button id="updateButton">Update Result</button>
+    <h5>Output Text</h5>
+    <textarea id="outputText" placeholder="Text with capitalized words will be here..." readonly></textarea>
+    <button id="copyButton">Copy Text</button>
+    <p id="wordCount">Word Count: 0</p>
+    <p id="charCount">Character Count: 0</p>
+    <script>
+        const prepositionsAndArticles = ["about", "above", "across", "after", "against", "along", "amid", "among", "around", "as", 
+
+"at", "before", "behind", "below", "beneath", "beside", "between", "beyond", "but", "by", "concerning", "considering", "despite", 
+
+"down", "during", "except", "for", "from", "in", "inside", "into", "like", "near", "of", "off", "on", "onto", "out", "outside", "over", 
+
+"past", "regarding", "round", "since", "through", "throughout", "till", "to", "toward", "under", "underneath", "until", "unto", "up", 
+
+"upon", "with", "within", "without", "a", "an", "the"];
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const capitalizedWordsInput = document.getElementById('capitalizedWords');
+        const copyButton = document.getElementById('copyButton');
+        const updateButton = document.getElementById('updateButton');
+        const wordCount = document.getElementById('wordCount');
+        const charCount = document.getElementById('charCount');
+        
+        function updateText() {
+            const capitalizedWords = capitalizedWordsInput.value.split(',').map(word => word.trim().toLowerCase());
+            const paragraphs = inputText.value.toLowerCase().split('\n');
+            const capitalizedParagraphs = paragraphs.map(paragraph => {
+                const sentences = paragraph.split('. ');
+                const capitalizedSentences = sentences.map(sentence => {
+                    const words = sentence.split(' ');
+                    const capitalizedWordsInSentence = words.map((word, index) => {
+                        if (word.includes('-')) {
+                            const subWords = word.split('-');
+                            return subWords.map((subWord, subIndex) => subIndex === 0 || !prepositionsAndArticles.includes(subWord) ? 
+
+subWord.charAt(0).toUpperCase() + subWord.slice(1) : subWord).join('-');
+                        } else if (capitalizedWords.includes(word.toLowerCase())) {
+                            return word.toUpperCase();
+                        } else {
+                            return index === 0 || !prepositionsAndArticles.includes(word) ? word.charAt(0).toUpperCase() + word.slice
+
+(1) : word;
+                        }
+                    });
+                    return capitalizedWordsInSentence.join(' ');
+                });
+                return capitalizedSentences.join('. ');
+            });
+            const capitalizedText = capitalizedParagraphs.join('\n');
+            outputText.value = capitalizedText;
+            wordCount.textContent = "Word Count: " + capitalizedText.split(' ').length;
+            charCount.textContent = "Character Count: " + capitalizedText.length;
+        }
+        
+        inputText.addEventListener('input', updateText);
+        updateButton.addEventListener('click', updateText);
+        
+        copyButton.addEventListener('click', function() {
+            outputText.select();
+            document.execCommand('copy');
+        });
+    </script>
+</body>
+</html>
